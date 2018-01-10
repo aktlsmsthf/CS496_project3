@@ -23,6 +23,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import io.socket.client.IO;
@@ -41,6 +43,8 @@ public class CamActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cam);
 
+        UsbCommunicationManager ucm = new UsbCommunicationManager(getApplicationContext());
+        ucm.connect();
 
         try {
             socket = IO.socket("http://13.125.60.120:3000/appsocket");
@@ -54,44 +58,34 @@ public class CamActivity extends AppCompatActivity {
         }
         Log.i("portport", "usbmanager");
 
-        UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_LONG).show();
+        //UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        UsbManager manager = ucm.usbManager;
+
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
-        Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_LONG).show();
         if (availableDrivers.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Toast.makeText(getApplicationContext(), "4", Toast.LENGTH_LONG).show();
 
 // Open a connection to the first available driver.
-        /*UsbSerialDriver driver = availableDrivers.get(0);
-        Toast.makeText(getApplicationContext(), "5", Toast.LENGTH_LONG).show();
+        UsbSerialDriver driver = availableDrivers.get(0);
         UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-        Toast.makeText(getApplicationContext(), "6", Toast.LENGTH_LONG).show();
         if (connection == null) {
-            Toast.makeText(getApplicationContext(), "7", Toast.LENGTH_LONG).show();
             // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
             return;
         }
-        Toast.makeText(getApplicationContext(), "8", Toast.LENGTH_LONG).show();
 
 // Read some data! Most have just one port (port 0).
         UsbSerialPort port = driver.getPorts().get(0);
         try {
-            Toast.makeText(getApplicationContext(), "9", Toast.LENGTH_LONG).show();
             port.open(connection);
-            Toast.makeText(getApplicationContext(), "10", Toast.LENGTH_LONG).show();
             port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
             byte buffer[] = new byte[16];
-            Toast.makeText(getApplicationContext(), "11", Toast.LENGTH_LONG).show();
             int numBytesRead = port.read(buffer, 1000);
-            Toast.makeText(getApplicationContext(), "12", Toast.LENGTH_LONG).show();
             Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
 
-            Log.i("TAG", "Read " + numBytesRead + " bytes.");
+            //Log.i("TAG", "Read " + numBytesRead + " bytes.");
         } catch (IOException e) {
             // Deal with error.
         } finally {
@@ -100,7 +94,7 @@ public class CamActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
     }
 
     private Emitter.Listener onMessageReceived = new Emitter.Listener() {
