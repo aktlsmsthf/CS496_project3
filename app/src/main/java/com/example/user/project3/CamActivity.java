@@ -99,38 +99,28 @@ public class CamActivity extends AppCompatActivity {
         public void run(){
 
             UsbManager manager = ucm.usbManager;
-            //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_LONG).show();
 
             List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
             if (availableDrivers.isEmpty()) {
-                //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_LONG).show();
                 return;
             }
 
 
 // Open a connection to the first available driver.
             UsbSerialDriver driver = availableDrivers.get(0);
-            //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_LONG).show();
             UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-            //Toast.makeText(getApplicationContext(), "4", Toast.LENGTH_LONG).show();
             if (connection == null) {
-                //Toast.makeText(getApplicationContext(), "5", Toast.LENGTH_LONG).show();
                 // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
                 return;
             }
 
 // Read some data! Most have just one port (port 0).
             UsbSerialPort port = driver.getPorts().get(0);
-            //Toast.makeText(getApplicationContext(), "6", Toast.LENGTH_LONG).show();
             try {
-                //Toast.makeText(getApplicationContext(), "7", Toast.LENGTH_LONG).show();
                 port.open(connection);
-                //Toast.makeText(getApplicationContext(), "8", Toast.LENGTH_LONG).show();
                 port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
-                //Toast.makeText(getApplicationContext(), "9", Toast.LENGTH_LONG).show();
 
                 byte buffer[] = new byte[16];
-                //Toast.makeText(getApplicationContext(), "10", Toast.LENGTH_LONG).show();
                 int numBytesRead = port.read(buffer, 1000);
                 receive = buffer.toString();
                 runOnUiThread(new Runnable(){
@@ -138,10 +128,6 @@ public class CamActivity extends AppCompatActivity {
                         tv.setText(receive.toString());
                     }
                 });
-
-                //Toast.makeText(getApplicationContext(), "11", Toast.LENGTH_LONG).show();
-                //Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
-                //Toast.makeText(getApplicationContext(), "12", Toast.LENGTH_LONG).show();
 
                 //Log.i("TAG", "Read " + numBytesRead + " bytes.");
             } catch (IOException e) {
